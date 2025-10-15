@@ -1,0 +1,90 @@
+services:
+  mariadb:
+    image: mariadb:11.4.3
+    container_name: mariadb
+    restart: always
+    environment:
+      MARIADB_DATABASE: $DB_NAME
+      MARIADB_USER: $DB_USER
+      MARIADB_PASSWORD: $DB_PASSWORD
+      MARIADB_ROOT_PASSWORD: $DB_ROOT_PASSWORD
+    volumes:
+      - ./docker-setup/volumes/sqldump:/docker-entrypoint-initdb.d
+    networks:
+      docker-net:
+        ipv4_address: 172.22.0.20
+
+  django:
+    build: ./docker-setup/django/
+    image: django:4.2.11-bullseye
+    container_name: django
+    tty: true
+    depends_on:
+      - mariadb
+    environment:
+      MARIADB_DATABASE: $DB_NAME
+      MARIADB_USER: $DB_USER
+      MARIADB_PASSWORD: $DB_PASSWORD
+      PYTHONPATH: /code
+      DJANGO_SETTINGS_MODULE: mysite.settings
+      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+      FB_GROUP_ID: $FB_GROUP_ID
+      FB_GROUP_TOKEN: $FB_GROUP_TOKEN
+    volumes:
+      - ./source:/code
+      - ./docker-setup/volumes/wsgi-socket:/root/socket
+    networks:
+      docker-net:
+        ipv4_address: 172.22.0.15
+    command: bash -c "/code/check_mariadb.sh && uwsgi --ini /root/uwsgi.ini --touch-reload=/root/reload.ini"
+
+  redis:
+    image: redis:7.2.0-alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - ./docker-setup/volumes/redisdata:/data
+    networks:
+      docker-net:
+        ipv4_address: 172.22.0.16
+
+  celery:
+    build: ./docker-setup/django/
+    container_name: celery
+    command: bash -c "/code/check_mariadb.sh && celery -A mysite worker --loglevel=warning"
+    depends_on:
+      - mariadb
+      - redis
+    tty: false
+    environment:
+      MARIADB_DATABASE: $DB_NAME
+      MARIADB_USER: $DB_USER
+      MARIADB_PASSWORD: $DB_PASSWORD
+      PYTHONPATH: /code
+      DJANGO_SETTINGS_MODULE: mysite.settings
+      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+      FB_GROUP_ID: $FB_GROUP_ID
+      FB_GROUP_TOKEN: $FB_GROUP_TOKEN
+    volumes:
+      - ./source:/code
+    networks:
+      docker-net:
+        ipv4_address: 172.22.0.17
+
+  nginx:
+    build: ./docker-setup/nginx
+    container_name: nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./source/static:/assets
+      - ./docker-setup/volumes/wsgi-socket:/tmp/django-socket
+    networks:
+      docker-net:
+        ipv4_address: 172.22.0.10
+
+networks:
+  docker-net:
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16

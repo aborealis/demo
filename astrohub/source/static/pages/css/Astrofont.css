@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Astro';
+    src: url('./Astro.woff2') format('woff2'),
+        url('./Astro.woff') format('woff'),
+        url('./Astro.ttf') format('ttf');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.text-astro {
+    font-family: 'Astro';
+}

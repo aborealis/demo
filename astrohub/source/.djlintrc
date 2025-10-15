@@ -1,0 +1,7 @@
+{
+  "max_line_length": 120,
+  "max_attribute_length": 520,
+  "line_break_after_multiline_tag": true,
+  "wrap_multiline_attributes": false,
+  "indent": 4
+}

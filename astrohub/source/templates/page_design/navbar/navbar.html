@@ -1,0 +1,57 @@
+{% load static %}
+<header>
+  <nav class="shadow navbar navbar-expand-md text-bg-dark fixed-top py-1">
+    <div class="container">
+      <a class="navbar-brand d-flex py-0" href="{% url 'main_page' %}">
+        <div class="logo me-2 my-2">
+        </div>
+        <div class="d-inline-block d-md-none d-xl-inline-block align-self-center text-white letter-spacing-0">
+          AstroHub
+        </div>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto me-3">
+          <li class="nav-item me-2">
+            <a class="nav-link text-white" aria-current="page" href="{% url 'static_page' slug='about' %}">About</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link text-white" aria-current="page" href="{% url 'main_page' %}">Upcoming Events</a>
+          </li>
+          <li class="nav-item dropdown me-2">
+            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              For Publishers
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="{% url 'static_page' slug='registration' %}">How to Register</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'static_page' slug='site-usage' %}">Publishing Tips</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link text-white" aria-current="page" href="{% url 'blog' %}">Blog</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link text-white" aria-current="page" rel="noreferrer" href="{% url 'admin:index' %}">
+              <span class="d-inline-block">
+                <span class="d-flex">
+                  <svg class="align-text-bottom me-1 bi bi-box-arrow-in-right align-self-center" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z" />
+                    <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                  </svg>
+                  Login
+                </span>
+              </span>
+            </a>
+          </li>
+          {% include "page_design/navbar/theme_switcher.html" %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

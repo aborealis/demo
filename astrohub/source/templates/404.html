@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+  <head>
+    <title>Page not found</title>
+    <meta name="description" content="The page you are looking for doesn't exist. Please try to find it in a search field below">
+    <meta name="keywords" content="{% if seo_keywords_list %}{{ seo_keywords_list|join:', ' }}{% elif seo_keywords %}{{ seo_keywords }}{% else %}example, default, keywords{% endif %}">
+    <script src="{% static 'pages/js/bootstrap-color-modes.js' %}"></script>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="{{ domain }}{{ page.get_absolute_url }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'pages/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'pages/favicon.svg' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'pages/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'pages/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'pages/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'pages/safari-pinned-tab.svg' %}" color="#da532c">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#563275">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#563275">
+    {% comment %} Внутренние стили {% endcomment %}
+    <style>
+  {% include 'onpage_css/mybootstrap.css'%}
+  {% include 'onpage_css/custom.css'%}
+    </style>
+  </head>
+  <body class="d-flex flex-column h-100">
+    {% include "page_design/navbar/navbar.html" %}
+    <main class="flex-shrink-0 mt-5 pt-4">
+      <div class="container">
+        <div class="col col-12 col-md-7 mx-auto text-center">
+          <div class="logo-footer mb-5 mt-5 mt-md-4 mx-auto padding-70px;">
+          </div>
+          <h1 class="title-font">
+            Error 404
+          </h1>
+          <p>
+            The page you ar requesting doesn't exist. Please try to find it in a search field below
+          </p>
+          <form class="mt-4 my-5" action="{% url 'posts_in_search' %}" method="get">
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+              </span>
+              <input type="text" class="form-control" placeholder=Search id="query" aria-describedby="query" name="s">
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+    {% include "page_design/footer.html" %}
+    <script src="{% static 'pages/js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

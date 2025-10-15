@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+  <head>
+    <title>{{ page.seo_title }}</title>
+    <meta name="description" content="{{ page.seo_description }}">
+    <meta name="keywords" content="{% if seo_keywords_list %}{{ seo_keywords_list|join:', ' }}{% elif seo_keywords %}{{ seo_keywords }}{% else %}example, default, keywords{% endif %}">
+    {% include "page_design/header/metatags.html" %}
+    {% if page_type == 'page' %}
+      {% include "page_design/header/schemaorg_page.html" %}
+    {% endif %}
+    {% if page_type == 'list_of_events' %}
+      {% include "page_design/header/schemaorg_page.html" %}
+    {% endif %}
+    {% if page_type == 'event' %}
+      {% include "page_design/header/schemaorg_page.html" %}
+    {% endif %}
+    {% if page_type == 'list_of_posts' %}
+      {% include "page_design/header/schemaorg_list_of_posts.html" %}
+    {% endif %}
+    {% if page_type == 'post' %}
+      {% include "page_design/header/schemaorg_post.html" %}
+    {% endif %}
+  </head>
+  <body class="d-flex flex-column h-100">
+    {% include "page_design/navbar/navbar.html" %}
+    <main class="flex-shrink-0 mt-3 pt-5">
+      {% if page_type == 'list_of_events' %}
+        {% include "my_events/all_events.html" %}
+      {% endif %}
+      {% if page_type == 'event' %}
+        {% include "my_events/chosen_event.html" %}
+      {% endif %}
+      {% if page_type == 'list_of_posts' %}
+        {% include "blog/all_posts.html" %}
+      {% endif %}
+      {% if page_type == 'post' %}
+        {% include "blog/chosen_post.html" %}
+      {% endif %}
+      {% if page_type == 'page' %}
+        {{ page.content|safe }}
+      {% endif %}
+      <script>
+      const lang = "en"
+      const title = 'Contents'
+      // Составляем HTML markup для оглавления и заносим в toc_string
+      let toc_string = `<div class="card mb-3 mt-4"><div class="card-body bg-light"><p class="card-title ps-3 fs-5 mb-0">${title}</p><ol class="toc card-text">`;
+      let h2_count = 0;
+      let h3_count = 0;
+      const h23s = document.querySelectorAll("h2, h3");
+      for (let i = 0; i < h23s.length; i++) {
+        const h = h23s[i];
+        const prev_level = i > 0 ? h23s[i-1].tagName : "H2";
+        const next_level = i < h23s.length - 1 ? h23s[i+1].tagName : "H2";
+        if (h.tagName == "H2") {
+          h3_count = 0;
+          toc_string += `<li><a href='#1-${++h2_count}'>${h.innerText}</a>`;
+          h.innerHTML += `<a id="1-${h2_count}" class="anchor"></a>`;
+        }
+        else if (h.tagName == "H3") {
+          const start = prev_level === "H2" ? "<ol>" : "";
+          const end = next_level === "H3" ? "" : "</ol>";
+          toc_string += `${start}<li><a href='#1-${h2_count}.${++h3_count}'>${h.innerText}</a></li>${end}`
+          h.innerHTML += `<a id="1-${h2_count}.${h3_count}" class="anchor"></a>`;
+        }
+      }
+      toc_string += "</ol></div></div>";
+    
+      const postText = document.getElementById("content");
+      if (postText) {
+        let innerHTML = postText.innerHTML;
+        innerHTML = innerHTML.replace('<p>[toc]</p>', toc_string)
+        postText.innerHTML = innerHTML;
+      }
+      </script>
+    </main>
+    {% include "page_design/footer.html" %}
+    <script src="{% static 'pages/js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

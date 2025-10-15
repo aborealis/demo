@@ -1,0 +1,26 @@
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "datePublished": "{{ page.date_published }}",
+    "dateModified": "{{ page.date_modified }}",
+    "isAccessibleForFree": true,
+    "author": {
+      "@type": "Person",
+      "name": "{{ page.author }}",
+      "url": "{{ page.author.url }}"
+    },
+    "inLanguage": "en",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{ domain }}{{ page.get_absolute_url }}"
+    },
+    "headline": "{{ page.seo_title }}",
+    "image": ["{{ domain }}/{{ page.image.image_post }}"],
+    "description": "{{ page.seo_description }}",
+    "about": {
+      "@type": "Thing",
+      "name": "Astrology"
+    }
+  }
+</script>

@@ -1,0 +1,88 @@
+<footer class="footer mt-auto py-3 bg-light">
+  <div class="container pt-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 text-dark">
+      <div class="col my-2 text-center text-sm-start">
+        <p class="logo-footer mx-auto mx-sm-0">
+        </p>
+        <p class="text-black pb-0 mb-0">
+          AstroHub
+        </p>
+        <p class="text-dark pt-0 mt-0">
+          <small>
+            © <span id="year"></span>
+          </small>
+        </p>
+      </div>
+      <div class="col my-2 text-center text-sm-start">
+        <p class="fs-5 text-black">
+          Policies
+        </p>
+        <ul class="footer-list">
+          <li>
+            <a class="text-dark" href="{% url 'static_page' slug='terms-of-use' %}">Terms of Use</a>
+          </li>
+          <li>
+            <a class="text-dark" href="{% url 'static_page' slug='privacy-policy' %}">Privacy Policy</a>
+          </li>
+          <li>
+            <a class="text-dark" href="{% url 'static_page' slug='cookie-policy' %}">Cookie Policy</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col my-2 text-center text-sm-start">
+        <p class="fs-5 text-black">
+          Follow us
+        </p>
+        <ul class="footer-list">
+          <li>
+            <a class="text-dark" href="https://www.facebook.com/people/Astrological-Events-Worldwide/61560821668951/">Facebook</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col my-2 text-center text-sm-start">
+        <p class="fs-5 text-black">
+          Contacts
+        </p>
+        <ul class="footer-list">
+          <li>
+            <a class="text-dark" href="mailto:info@astrohub.events">info@astrohub.events</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+<div id="privacy-popup" class="fixed-bottom d-none opacity-0">
+  <div class="d-flex align-items-center justify-content-between bg-dark">
+    <div class="p-3 text-light">
+      This Site uses cookies. By browsing it, you agree with our <a href="{% url 'static_page' slug='cookie-policy' %}" class="text-light">Cookie Policy</a>.
+    </div>
+    <div class="p-3">
+      <button class="btn btn-sm btn-primary" onclick="acceptPrivacyPolicy()">
+        Agree
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const popup = document.getElementById('privacy-popup');
+      // С легкой задержкой после видимости слоя начинаем мягкое проявление попапа
+      if (!localStorage.getItem('privacyAccepted')) {
+        popup.style.display = 'block';
+        setTimeout(function() {
+          popup.style.transition = 'opacity 1s';
+          popup.style.opacity = '1';
+        }, 500);
+      }
+    });
+  
+    function acceptPrivacyPolicy() {
+        localStorage.setItem('privacyAccepted', 'true');
+        document.getElementById('privacy-popup').style.display = 'none';
+    }
+</script>
+<script>
+    const year = new Date().getFullYear();
+    document.getElementById('year').innerHTML = year;
+</script>

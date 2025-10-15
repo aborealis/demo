@@ -1,0 +1,66 @@
+{% load static %}
+<script src="{% static 'pages/js/bootstrap-color-modes.js' %}"></script>
+<meta charset="UTF-8">
+<link rel="canonical" href="{{ domain }}{{ page.get_absolute_url }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'pages/apple-touch-icon.png' %}">
+<link rel="icon" href="{% static 'pages/favicon.svg' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'pages/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'pages/favicon-16x16.png' %}">
+<link rel="manifest" href="{% static 'pages/site.webmanifest' %}">
+<link rel="mask-icon" href="{% static 'pages/safari-pinned-tab.svg' %}" color="#da532c">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#563275">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#563275">
+{% if page_type == 'post' %}
+    <meta property="article:published_time" content="{{ page.date_published }}">
+    <meta property="article:modified_time" content="{{ page.date_modified }}">
+    <meta property="article:author" content="{{ page.author.name }}">
+{% endif %}
+<meta property="og:title" content="{{ page.seo_title }}">
+<meta property="fb:app_id" content="966242223397117">
+<meta property="og:description" content="{{ page.seo_description }}">
+<meta property="og:url" content="{{ domain }}{{ page.get_absolute_url }}">
+<meta property="og:image" content="{{ domain }}{{ page.image.url }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:locale" content="en">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator" content="@markrusborn">
+<meta name="twitter:title" content="{{ page.seo_title }}">
+<meta name="twitter:description" content="{{ page.seo_description }}">
+<meta name="twitter:image" content="{{ domain }}{{ page.image.url }}">
+{% if is_non_indexed %}
+    <meta name="robots" content="noindex">
+{% endif %}
+{% if page.include_astrofont %}
+    <link href="{% static 'pages/css/Astrofont.css' %}" rel="stylesheet">
+{% endif %}
+{% if page.include_math %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full">
+    </script>
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [
+            ["$", "$"], ["\\\\(", "\\\\)"]
+            ],
+            displayMath: [
+            ["$$", "$$"], ["\\[", "\\]"]
+            ],
+            processEscapes: true
+        },
+        config: ["MMLorHTML.js"],
+        jax: ["input/TeX", "output/HTML-CSS", "output/NativeMML"],
+        extensions: ["MathMenu.js", "MathZoom.js"]
+    });
+    </script>
+{% endif %}
+{% comment %} Внутренние стили {% endcomment %}
+<style>
+    {% include 'onpage_css/mybootstrap.css'%}
+    {% include 'onpage_css/custom.css'%}
+</style>

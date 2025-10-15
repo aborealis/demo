@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.py[cod]
+*.pyo
+source/static/*
+!source/static/blog/
+!source/static/img/
+!source/static/pages/
+*.log
+dump.rdb

@@ -1,0 +1,280 @@
+<div class="position-sticky top-6rem">
+  <div class="card mb-3">
+    <div class="card-body">
+      <p class="fs-5 card-title">
+        Search for Event
+      </p>
+      <form action="{% url 'show_events_in_search' %}" method="get">
+        <div class="input-group mb-3">
+          <span class="input-group-text">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+            </svg>
+          </span>
+          <input type="text" class="form-control" placeholder="Search" id="query" aria-describedby="query" name="s">
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <p class="fs-5 card-title">
+        Filter Events
+      </p>
+      <div class="input-group" id="dateForm">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+            <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z" />
+            <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+          </svg>
+        </span>
+        <select class="form-select" aria-label="Month" id="my_month">
+          <option selected value="">
+            Month
+          </option>
+          <option value="01">
+            Jan
+          </option>
+          <option value="02">
+            Feb
+          </option>
+          <option value="03">
+            Mar
+          </option>
+          <option value="04">
+            Apr
+          </option>
+          <option value="05">
+            May
+          </option>
+          <option value="06">
+            Jun
+          </option>
+          <option value="07">
+            Jul
+          </option>
+          <option value="08">
+            Aug
+          </option>
+          <option value="09">
+            Sep
+          </option>
+          <option value="10">
+            Oct
+          </option>
+          <option value="11">
+            Nov
+          </option>
+          <option value="12">
+            Dec
+          </option>
+        </select>
+        <select class="form-select" aria-label="Year" id="my_year">
+          <option selected value="">
+            Year
+          </option>
+          {% for year in years %}
+            <option value="{{ year }}">
+              {{ year }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-text mb-3">
+        The date field is required
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
+            <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0" />
+            <path d="M2 1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2a1 1 0 0 1 1-1m0 5.586 7 7L13.586 9l-7-7H2z" />
+          </svg>
+        </span>
+        <select class="form-select" aria-label="Type" id="event_type">
+          <option selected value="any">
+            Any Type
+          </option>
+          <option value="webinar">
+            Webinar
+          </option>
+          <option value="conference">
+            Conference
+          </option>
+          <option value="course">
+            Course
+          </option>
+          <option value="other">
+            Other
+          </option>
+        </select>
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-display" viewBox="0 0 16 16">
+            <path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2h-4q0 1 .25 1.5H11a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h.75Q6 13 6 12H2s-2 0-2-2zm1.398-.855a.76.76 0 0 0-.254.302A1.5 1.5 0 0 0 1 4.01V10c0 .325.078.502.145.602q.105.156.302.254a1.5 1.5 0 0 0 .538.143L2.01 11H14c.325 0 .502-.078.602-.145a.76.76 0 0 0 .254-.302 1.5 1.5 0 0 0 .143-.538L15 9.99V4c0-.325-.078-.502-.145-.602a.76.76 0 0 0-.302-.254A1.5 1.5 0 0 0 13.99 3H2c-.325 0-.502.078-.602.145" />
+          </svg>
+        </span>
+        <select class="form-select" aria-label="Format" id="event_format">
+          <option selected value="any">
+            Any Format
+          </option>
+          <option value="online">
+            Online
+          </option>
+          <option value="in_person">
+            In-person
+          </option>
+          <option value="hybrid">
+            Hybrid
+          </option>
+        </select>
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hourglass" viewBox="0 0 16 16">
+            <path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5m2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.491v.702c0 .7-.478 1.235-1.011 1.491A3.5 3.5 0 0 0 4.5 13v1h7v-1a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351v-.702c0-.7.478-1.235 1.011-1.491A3.5 3.5 0 0 0 11.5 3V2z" />
+          </svg>
+        </span>
+        <select class="form-select" aria-label="Duration" id="event_duration">
+          <option selected value="any">
+            Any Duration
+          </option>
+          <option value="oneday">
+            One-day event
+          </option>
+          <option value="multiday">
+            Multi-day event
+          </option>
+        </select>
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
+            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
+          </svg>
+        </span>
+        <select class="form-select" aria-label="Audience" id="event_audience">
+          <option selected value="any">
+            Any Knowledge of Astrology
+          </option>
+          <option value="newbies">
+            Newbies in astrology
+          </option>
+          <option value="advanced">
+            Advanced astrologers
+          </option>
+        </select>
+      </div>
+      <button id="filterButton" type="submit" class="btn btn-primary w-100" disabled onclick="filterEvent()">
+        Apply Filter
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+  (function() {
+    /**
+    * Установка текущих значений фильтра из формы
+    */
+
+    // текущий URL
+    const url = new URL(window.location.href);
+    
+    // Регулярное выражение для извлечения года и месяца из URL
+    const regex = /\/(\d{4})\/(\d{2})\//;
+    const match = url.pathname.match(regex);
+    
+    if (match) {
+      const month = match[2];
+      const year = match[1];
+
+      // Извлечение параметров запроса
+      const params = new URLSearchParams(url.search);
+      const t = params.get('t');
+      const f = params.get('f');
+      const d = params.get('d');
+      const a = params.get('a');
+      
+      const monthSelector = document.getElementById("my_month");
+      const yearSelector = document.getElementById("my_year");
+      const typeSelector = document.getElementById("event_type");
+      const formatSelector = document.getElementById("event_format");
+      const durationSelector = document.getElementById("event_duration");
+      const audienceSelector = document.getElementById("event_audience");
+                
+      for (let option of yearSelector.options) {
+          if (option.value === year) {
+              option.selected = true;
+              break;
+          }
+      }
+
+      for (let option of monthSelector.options) {
+          if (option.value === month) {
+              option.selected = true;
+              break;
+          }
+      }
+
+
+      if (['webinar', 'conference', 'course', 'other'].includes(t)) {
+        for (let option of typeSelector.options) {
+            if (option.value === t) {
+                option.selected = true;
+                break;
+            }
+        }
+      }
+
+      if (['online', 'in_person', 'hybrid'].includes(f)) {
+        for (let option of formatSelector.options) {
+            if (option.value === f) {
+                option.selected = true;
+                break;
+            }
+        }
+      }
+
+      if (['oneday', 'multiday'].includes(d)) {
+        for (let option of durationSelector.options) {
+            if (option.value === d) {
+                option.selected = true;
+                break;
+            }
+        }
+      }
+
+      if (['newbies', 'advanced'].includes(a)) {
+        for (let option of audienceSelector.options) {
+            if (option.value === a) {
+                option.selected = true;
+                break;
+            }
+        }
+      }
+
+      updateFilterButtonState()
+    }
+  })();
+
+  function updateFilterButtonState() {
+    const month = document.getElementById('my_month').value;
+    const year = document.getElementById('my_year').value;
+    const filterButton = document.getElementById('filterButton');
+    filterButton.disabled = !(month && year);
+  }
+
+  document.getElementById('my_month').addEventListener('change', updateFilterButtonState);
+  document.getElementById('my_year').addEventListener('change', updateFilterButtonState);
+
+  function filterEvent() {
+    const month = document.getElementById('my_month').value;
+    const year = document.getElementById('my_year').value;
+    const eventType = document.getElementById('event_type').value;
+    const eventFormat = document.getElementById('event_format').value;
+    const eventDuration = document.getElementById('event_duration').value;
+    const eventAudience = document.getElementById('event_audience').value;
+    const url = '{{ domain }}/events/' + `${year}/${month}/?t=${eventType}&f=${eventFormat}&d=${eventDuration}&a=${eventAudience}`;
+    window.location.href = url;
+  }
+</script>
