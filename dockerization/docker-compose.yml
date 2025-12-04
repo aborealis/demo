@@ -1,0 +1,107 @@
+services:
+  mariadb:
+    image: mariadb:12.1.1-ubi10-rc
+    container_name: mariadb
+    restart: always
+    environment:
+      MARIADB_DATABASE: $MARIADB_NAME
+      MARIADB_USER: $MARIADB_USER
+      MARIADB_PASSWORD: $MARIADB_PASSWORD
+      MARIADB_ROOT_PASSWORD: $MARIADB_ROOT_PASSWORD
+    volumes:
+      - ./docker-setup/volumes/sqldump:/docker-entrypoint-initdb.d
+    networks:
+      - demo-net
+
+  django:
+    build: ./docker-setup/django/
+    container_name: django
+    tty: true
+    depends_on:
+      - mariadb
+    environment:
+      DOMAIN: $DOMAIN
+      MARIADB_DATABASE: $MARIADB_NAME
+      MARIADB_USER: $MARIADB_USER
+      MARIADB_PASSWORD: $MARIADB_PASSWORD
+      MARIADB_ROOT_PASSWORD: $MARIADB_ROOT_PASSWORD
+      PYTHONPATH: /code
+      DJANGO_SETTINGS_MODULE: mysite.settings
+      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+    volumes:
+      - ./source/backend:/code
+      - ./docker-setup/volumes/asgi-socket:/run/socket
+    networks:
+      - demo-net
+    command: /root/start.sh
+
+  redis:
+    image: redis:8.4.0-alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - ./docker-setup/volumes/redisdata:/data
+    networks:
+      - demo-net
+
+  celery:
+    build: ./docker-setup/django/
+    container_name: celery
+    command:
+      [
+        "celery",
+        "-A",
+        "mysite",
+        "worker",
+        "--loglevel=warning",
+        "--uid=nobody",
+        "--gid=nogroup",
+      ]
+    depends_on:
+      - mariadb
+      - redis
+    tty: false
+    environment:
+      DOMAIN: $DOMAIN
+      MARIADB_DATABASE: $MARIADB_NAME
+      MARIADB_USER: $MARIADB_USER
+      MARIADB_PASSWORD: $MARIADB_PASSWORD
+      MARIADB_ROOT_PASSWORD: $MARIADB_ROOT_PASSWORD
+      PYTHONPATH: /code
+      DJANGO_SETTINGS_MODULE: mysite.settings
+      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+    volumes:
+      - ./source/backend:/code
+    networks:
+      - demo-net
+
+  nginx:
+    build: ./docker-setup/nginx
+    container_name: nginx
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./source/backend/static:/static
+      - ./docker-setup/volumes/asgi-socket:/run/django-socket
+    networks:
+      - demo-net
+
+  react:
+    build: ./docker-setup/react/
+    restart: always
+    container_name: react
+    tty: true
+    working_dir: /code/
+    environment:
+      WDS_SOCKET_PORT: 0
+    ports:
+      - "127.0.0.1:8001:5173"
+    volumes:
+      - ./source/frontend:/code/
+    networks:
+      - demo-net
+    command: sh -c "npm install && npm run dev"
+
+networks:
+  demo-net:
+    driver: bridge

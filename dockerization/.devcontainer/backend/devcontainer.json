@@ -1,0 +1,41 @@
+{
+  "name": "Backend (Django)",
+  "dockerComposeFile": ["../../docker-compose.yml"],
+  "service": "django",
+  "workspaceFolder": "/code",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "pylint.args": [
+          "--load-plugins",
+          "pylint_django",
+          "--django-settings-module=mysite.settings",
+          "--max-line-length=120"
+        ],
+        "[django-html]": {
+          "editor.defaultFormatter": "monosans.djlint",
+          "editor.formatOnSave": true
+        },
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.autopep8",
+          "editor.formatOnSave": true
+        },
+        "files.associations": {
+          "*.html": "html",
+          "**/templates/**/*.html": "django-html"
+        }
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.autopep8",
+        "ms-python.pylint",
+        "batisteo.vscode-django",
+        "monosans.djlint"
+      ]
+    }
+  },
+  "shutdownAction": "none",
+  "postCreateCommand": "python -m pip install --no-cache-dir --root-user-action=ignore -U autopep8 djlint pylint-django"
+}
