@@ -1,0 +1,35 @@
+{
+  "typeCheckingMode": "strict",
+  "include": [
+    "."
+  ],
+  "extraPaths": [
+    "/usr/local/lib/python3.13/site-packages"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    ".pytest_cache",
+    ".continue",
+    "tests",
+    "db/alembic",
+    "haystack_pipelines/playground",
+    "haystack_pipelines/playground.py",
+    "manage.py"
+  ],
+  "reportMissingImports": "warning",
+  "reportMissingTypeStubs": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownLambdaType": "none",
+  "reportMissingTypeArgument": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportUnusedImport": "none",
+  "reportUnusedFunction": "none",
+  "reportUntypedFunctionDecorator": "none",
+  "reportUnnecessaryCast": "none",
+  "reportUnnecessaryIsInstance": "none",
+  "reportAssignmentType": "none",
+  "pythonVersion": "3.13"
+}

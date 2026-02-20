@@ -1,0 +1,153 @@
+x-common-env: &common-env
+  OPENAI_API_KEY: $OPENAI_API_KEY
+  COHERE_API_KEY: $COHERE_API_KEY
+  OLLAMA_BASE_URL: http://ollama:11434
+  PG_CONN_STR: "host=postgres port=5432 dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD"
+  TEST_PG_CONN_STR: "host=postgres port=5432 dbname=$POSTGRES_TEST_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD"
+  DATABASE_URL: "postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB"
+  TEST_DATABASE_URL: "postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_TEST_DB"
+  APP_ADMIN_USER: $APP_ADMIN_USER
+  APP_ADMIN_HASHED_PASSWORD: $APP_ADMIN_HASHED_PASSWORD
+  APP_SECRET_KEY: $APP_SECRET_KEY
+  PYTHONPATH: /code
+  POSTGRES_DB: $POSTGRES_DB
+  POSTGRES_USER: $POSTGRES_USER
+  POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+  HAYSTACK_TELEMETRY_ENABLED: False
+
+networks:
+  chatbot-net:
+    driver: bridge
+
+services:
+  # Для запуска Оллама на локальной машине с NVIDIA GPU нужно установить nvidia-docker2 package.
+  # См. https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+  ollama:
+    build: ./docker-setup/ollama/
+    container_name: ollama-chatgpt
+    volumes:
+      - /mnt/kingston/ollama-models:/root/.ollama
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - OLLAMA_NUM_CTX=8192
+      - OLLAMA_CONTEXT=8192
+      - OLLAMA_RUNNER_BATCH_SIZE=512
+      - OLLAMA_API_KEY=$OLLAMA_API_KEY
+    restart: unless-stopped
+    # Дополнительно: healthcheck для проверки готовности
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - chatbot-net
+
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    volumes:
+      - ./docker-setup/volumes/postgres-data:/var/lib/postgresql/data
+      - ./docker-setup/volumes/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - chatbot-net
+
+  redis:
+    image: redis:8.4.0-bookworm
+    container_name: redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "no"]
+    volumes:
+      - ./docker-setup/volumes/redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - chatbot-net
+
+  haystack:
+    build:
+      context: ./docker-setup/haystack/
+      target: dev
+    container_name: haystack
+    tty: true
+    environment:
+      <<: *common-env
+      RUN_MIGRATIONS: "1"
+    volumes:
+      - "./source/backend:/code"
+    ports:
+      - "8000:80"
+    networks:
+      - chatbot-net
+    depends_on:
+      ollama:
+        condition: service_healthy # Ждем пока Ollama будет готов
+      postgres:
+        condition: service_healthy # Ждем пока PostgreSQL будет готов
+      redis:
+        condition: service_healthy # Ждем пока Редис будет готов
+
+  celery:
+    build: ./docker-setup/haystack/
+    container_name: celery
+    image: python:3.14-slim-bookworm
+    depends_on:
+      ollama:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    tty: true
+    stdin_open: true
+    environment:
+      <<: *common-env
+      RUN_MIGRATIONS: "0"
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+    volumes:
+      - ./source/backend:/code
+    networks:
+      - chatbot-net
+    command:
+      [
+        "celery",
+        "-A",
+        "services.celery_app.celery_app",
+        "worker",
+        "--loglevel=info",
+      ]
+
+  react:
+    build: ./docker-setup/react/
+    restart: always
+    container_name: react
+    image: node:20.19.0-bullseye-slim
+    tty: true
+    working_dir: /code/
+    environment:
+      WDS_SOCKET_PORT: 0
+    ports:
+      - "8001:5173"
+    volumes:
+      - ./source/frontend:/code/
+    networks:
+      - chatbot-net
+    command: ["npm", "run", "dev"]

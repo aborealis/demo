@@ -1,0 +1,5 @@
+docker-setup/volumes/postgres-data
+docker-setup/volumes/redis-data
+__pycache__
+.continue
+alembic

@@ -1,0 +1,23 @@
+{
+  "name": "Frontend (React)",
+  "dockerComposeFile": ["../../docker-compose.yml"],
+  "service": "react",
+  "workspaceFolder": "/code",
+  "shutdownAction": "none",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "burkeholland.simple-react-snippets",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-typescript-next",
+        "NuclleaR.vscode-extension-auto-import",
+        "openai.chatgpt"
+      ],
+      "settings": {
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "postCreateCommand": "npm install"
+}

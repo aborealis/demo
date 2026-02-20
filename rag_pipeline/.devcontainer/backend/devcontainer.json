@@ -1,0 +1,40 @@
+{
+  "name": "Backend (Haystack)",
+  "dockerComposeFile": ["../../docker-compose.yml"],
+  "service": "haystack",
+  "workspaceFolder": "/code",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+
+        // Проверка типов
+        "mypy-type-checker.args": [
+          "--config-file",
+          "${workspaceFolder}/mypy.ini"
+        ],
+        "mypy-type-checker.cwd": "${workspaceFolder}",
+        "mypy-type-checker.reportingScope": "workspace",
+
+        // Тестирование
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["."],
+
+        // Форматирование
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.autopep8",
+          "editor.formatOnSave": true
+        }
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.autopep8",
+        "ms-python.mypy-type-checker",
+        "charliermarsh.ruff",
+        "openai.chatgpt"
+      ]
+    }
+  },
+  "shutdownAction": "none",
+  "postCreateCommand": "python -m pip install --no-cache-dir --root-user-action=ignore -U autopep8 mypy pyright types-sqlalchemy"
+}
