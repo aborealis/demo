@@ -27,45 +27,39 @@ import {
   SearchType,
   type DocProgress,
   type DocsServerType,
-  type DocViewState,
   type OneDocType,
   type RequestOptions,
 } from "./helpers/types";
+import type {
+  AppAction,
+  AppState,
+} from "./dashboard_wripper/helpers/appReducer";
+import type {
+  DocAction,
+  DocState,
+} from "./dashboard_wripper/helpers/docReducer";
 
 interface Params {
-  isAuthenticated: boolean;
-  setIsAuthenticated: (flag: boolean) => void;
-  docsViewState: DocViewState;
-  setDocsViewState: React.Dispatch<React.SetStateAction<DocViewState>>;
-  setActiveLayer: (layer: string) => void;
+  appState: AppState;
+  docState: DocState;
+  appDispatch: React.ActionDispatch<[action: AppAction]>;
+  docDispatch: React.ActionDispatch<[action: DocAction]>;
 }
 
 const Documents = (params: Params) => {
-  const {
-    isAuthenticated,
-    setIsAuthenticated,
-    docsViewState,
-    setDocsViewState,
-    setActiveLayer,
-  } = params;
+  const { appState, docState, appDispatch, docDispatch } = params;
 
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const prevDocsViewStateRef = useRef<DocViewState | null>(null);
+  const prevDocsStateRef = useRef<DocState | null>(null);
 
   useEffect(() => {
     scrollToTopInstant();
 
-    if (prevDocsViewStateRef.current) {
-      const prevDocViewState = prevDocsViewStateRef.current;
-      const {
-        documents: _val1,
-        ...triggerKeysPrev
-      } = prevDocViewState;
-      const {
-        documents: _val2,
-        ...triggerKeysCurent
-      } = docsViewState;
+    if (prevDocsStateRef.current) {
+      const prevDocState = prevDocsStateRef.current;
+      const { documents: _val1, ...triggerKeysPrev } = prevDocState;
+      const { documents: _val2, ...triggerKeysCurent } = docState;
 
       void _val1;
       void _val2;
@@ -73,27 +67,24 @@ const Documents = (params: Params) => {
       if (isDeepEqual(triggerKeysPrev, triggerKeysCurent)) return;
     }
 
-    const setDocuments = (documents: DocsServerType) =>
-      setDocsViewState((prev) => ({ ...prev, documents }));
-
     let API = "";
     const docsRequestOptions: RequestOptions = {
       method: Method.GET,
       token: localStorage.getItem("AuthToken") ?? undefined,
       body: {
-        offset: (docsViewState.currentPage - 1) * docsViewState.docsPerPage,
-        limit: docsViewState.docsPerPage,
+        offset: (docState.currentPage - 1) * docState.docsPerPage,
+        limit: docState.docsPerPage,
       },
     };
 
     const fetchDocuments = async () => {
-      if (!docsViewState.searchQuery) {
+      if (!docState.searchQuery) {
         API = APIs.fetchDocs;
-      } else if (docsViewState.searchType == SearchType.context) {
+      } else if (docState.searchType == SearchType.context) {
         API = APIs.searchDocsContext;
         docsRequestOptions.method = Method.POST;
         docsRequestOptions.body = {
-          query: docsViewState.searchQuery,
+          query: docState.searchQuery,
           top_k: 5,
         };
       } else {
@@ -101,7 +92,7 @@ const Documents = (params: Params) => {
         docsRequestOptions.method = Method.POST;
         docsRequestOptions.body = {
           ...docsRequestOptions.body,
-          query: docsViewState.searchQuery,
+          query: docState.searchQuery,
         };
       }
 
@@ -112,40 +103,26 @@ const Documents = (params: Params) => {
 
       setIsLoading(false);
       if (result.notAuthenticated) {
-        setIsAuthenticated(false);
+        appDispatch({ type: "SET_UNAUTH" });
         setServerError("");
       } else if (result.error) {
         setServerError(result.error);
       } else if (result.data) {
         setServerError("");
-        setDocuments(result.data);
+        docDispatch({ type: "SET_DOCUMENTS", documents: result.data });
       }
     };
 
     fetchDocuments();
-    prevDocsViewStateRef.current = docsViewState;
-  }, [docsViewState, setIsAuthenticated, setDocsViewState, isAuthenticated]);
+    prevDocsStateRef.current = docState;
+  }, [docState, appState.isAuthenticated, docDispatch, appDispatch]);
 
-  const [searchDraft, setSearchDraft] = useState(
-    docsViewState.searchQuery ?? "",
-  );
-
-  const setDocsPerPage = (n: number) =>
-    setDocsViewState((prev) => ({ ...prev, docsPerPage: n }));
-
-  const setCurrentPage = (n: number) =>
-    setDocsViewState((prev) => ({ ...prev, currentPage: n }));
-
-  const setSearchType = (sType: string) =>
-    setDocsViewState((prev) => ({ ...prev, searchType: sType }));
+  const [searchDraft, setSearchDraft] = useState(docState.searchQuery ?? "");
 
   const setSearchQuery = (query: string | null) => {
     setIsLoading(true);
-    setDocsViewState((prev) => ({
-      ...prev,
-      searchQuery: query,
-      currentPage: 1,
-    }));
+    docDispatch({ type: "SET_SEARCH_QUERY", query });
+    docDispatch({ type: "SET_CURRENT_PAGE", page: 1 });
   };
 
   const resetSearchQuery = () => {
@@ -154,29 +131,23 @@ const Documents = (params: Params) => {
   };
 
   const isPaginationVisible =
-    docsViewState.documents.total_count > docsViewState.docsPerPage;
+    docState.documents.total_count > docState.docsPerPage;
 
   const paramsPaginator = {
-    nPages: Math.ceil(
-      docsViewState.documents.total_count / docsViewState.docsPerPage,
-    ),
-    docsViewState,
-    setDocsViewState,
+    docState,
+    docDispatch,
     setIsLoading,
   };
 
   const handleChangeDocsPerPage = (n: number) => {
     setIsLoading(true);
-    setDocsPerPage(n);
-    setCurrentPage(1);
+    docDispatch({ type: "SET_DOCS_PER_PAGE", number: n });
+    docDispatch({ type: "SET_CURRENT_PAGE", page: 1 });
   };
 
-  const setDocToEdit = (doc: OneDocType) =>
-    setDocsViewState((prev) => ({ ...prev, documentToEdit: doc }));
-
   const handleEditDoc = (doc: OneDocType) => {
-    setDocToEdit(doc);
-    setActiveLayer(layerNames.documentEdit);
+    docDispatch({ type: "SET_DOC_TO_EDIT", document: doc });
+    appDispatch({ type: "SET_LAYER", layer: layerNames.documentEdit });
   };
 
   const [progresses, setProgresses] = useState<DocProgress>({});
@@ -185,7 +156,7 @@ const Documents = (params: Params) => {
   useEffect(() => {
     const intervals = progressIntervalsRef.current;
     const queuedIds = new Set<number>();
-    for (const doc of docsViewState.documents.documents) {
+    for (const doc of docState.documents.documents) {
       if (doc.status === "queued") {
         queuedIds.add(doc.id);
       }
@@ -202,7 +173,7 @@ const Documents = (params: Params) => {
         });
 
         if (result.notAuthenticated) {
-          setIsAuthenticated(false);
+          appDispatch({ type: "SET_UNAUTH" });
           return;
         }
 
@@ -215,15 +186,7 @@ const Documents = (params: Params) => {
           const data = result.data;
 
           if (data.status === "ready") {
-            setDocsViewState((prev) => ({
-              ...prev,
-              documents: {
-                ...prev.documents,
-                documents: prev.documents.documents.map((doc) =>
-                  doc.id === docId ? { ...doc, status: "ready" } : doc,
-                ),
-              },
-            }));
+            docDispatch({ type: "SET_DOC_STATUS_READY", docId });
 
             setProgresses((prev) => {
               const next = { ...prev };
@@ -274,7 +237,7 @@ const Documents = (params: Params) => {
       }
       intervals.clear();
     };
-  }, [docsViewState.documents.documents, setDocsViewState, setIsAuthenticated]);
+  }, [docState.documents.documents, docDispatch, appDispatch]);
 
   const [showModal, setShowModal] = useState(false);
   const [docIDtoDelete, setDocIDtoDelete] = useState<number | null>(null);
@@ -297,22 +260,13 @@ const Documents = (params: Params) => {
     });
 
     if (result.notAuthenticated) {
-      setIsAuthenticated(false);
+      appDispatch({ type: "SET_UNAUTH" });
       setServerError("");
     } else if (result.error) {
       setServerError(result.error);
     } else {
       setServerError("");
-      setDocsViewState((prev) => ({
-        ...prev,
-        documents: {
-          ...prev.documents,
-          documents: prev.documents.documents.filter(
-            (doc) => doc.id !== docIDtoDelete,
-          ),
-          total_count: prev.documents.total_count - 1,
-        },
-      }));
+      docDispatch({ type: "REMOVE_DOC", docId: docIDtoDelete });
       handleCloseModal();
     }
   };
@@ -348,9 +302,7 @@ const Documents = (params: Params) => {
         <InputGroup.Text id="ipp-txt" className="border-0 bg-white">
           Items per page
         </InputGroup.Text>
-        <InputGroup.Text id="ipp-val">
-          {docsViewState.docsPerPage}
-        </InputGroup.Text>
+        <InputGroup.Text id="ipp-val">{docState.docsPerPage}</InputGroup.Text>
         <Dropdown className="d-inline-block ms-2">
           <Dropdown.Toggle
             variant="outline-secondary"
@@ -381,8 +333,8 @@ const Documents = (params: Params) => {
     return <Loader />;
   }
 
-  if (!isAuthenticated) {
-    return <Login setIsAuthenticated={setIsAuthenticated} />;
+  if (!appState.isAuthenticated) {
+    return <Login appDispatch={appDispatch} />;
   }
 
   if (serverError) {
@@ -399,7 +351,7 @@ const Documents = (params: Params) => {
           <InputGroup>
             <Form.Control
               aria-label="Search documents"
-              placeholder={docsViewState.searchType}
+              placeholder={docState.searchType}
               onChange={(e) => setSearchDraft(e.target.value)}
               value={searchDraft}
               onKeyDown={(e) => {
@@ -422,7 +374,9 @@ const Documents = (params: Params) => {
                 <Dropdown.Item
                   key={item}
                   href="#"
-                  onClick={() => setSearchType(item)}
+                  onClick={() =>
+                    docDispatch({ type: "SET_SEARCH_TYPE", searchType: item })
+                  }
                 >
                   {item}
                 </Dropdown.Item>
@@ -442,7 +396,7 @@ const Documents = (params: Params) => {
             </tr>
           </thead>
           <tbody>
-            {docsViewState.documents.documents.map((item) => (
+            {docState.documents.documents.map((item) => (
               <tr key={item.id}>
                 <td className={item.status == "queued" ? "text-secondary" : ""}>
                   <div>{item.name.slice(0, 150)}</div>

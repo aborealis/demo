@@ -1,9 +1,10 @@
 import { Button, Card, Form } from "react-bootstrap";
 import { useState } from "react";
 import { APIs } from "./constants";
+import type { AppAction } from "../dashboard_wripper/helpers/appReducer";
 
 interface Params {
-  setIsAuthenticated: (flag: boolean) => void;
+  appDispatch: React.ActionDispatch<[action: AppAction]>;
 }
 
 const Login = (params: Params) => {
@@ -12,7 +13,7 @@ const Login = (params: Params) => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
-  const { setIsAuthenticated } = params;
+  const { appDispatch } = params;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,9 +30,9 @@ const Login = (params: Params) => {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem("AuthToken", data.access_token);
-      setIsAuthenticated(true);
+      appDispatch({ type: "SET_AUTH" });
     } else if (response.status === 401) {
-      setIsAuthenticated(false);
+      appDispatch({ type: "SET_UNAUTH" });
       const data = await response.json();
       if (data.detail === "Invalid username") {
         setErrors({ email: "Invalid email" });
@@ -39,7 +40,7 @@ const Login = (params: Params) => {
         setErrors({ password: "Invalid password" });
       }
     } else {
-      setIsAuthenticated(false);
+      appDispatch({ type: "SET_UNAUTH" });
       console.error("Unexpected error", response.status);
     }
   };

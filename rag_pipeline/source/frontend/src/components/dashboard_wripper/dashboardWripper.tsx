@@ -1,13 +1,15 @@
 import { Col, Row } from "react-bootstrap";
-import DashboardNavBar from "./dashboardNavBar";
-import { useState, type ReactNode } from "react";
-import DashboardSideBarMobile from "./dashboardSideBarMobile";
-import DashboartSidebarDesktop from "./dashboardSideBarDesktop";
-import Documents from "./documents";
-import { layerNames } from "./helpers/constants";
-import { docsViewInitState, type DocViewState } from "./helpers/types";
-import DocumentEdit from "./documentEdit";
-import Tests from "./tests";
+import DashboardNavBar from "../dashboardNavBar";
+import { useReducer, useState } from "react";
+import DashboardSideBarMobile from "../dashboardSideBarMobile";
+import DashboartSidebarDesktop from "../dashboardSideBarDesktop";
+import Documents from "../documents";
+import { layerNames } from "../helpers/constants";
+import DocumentEdit from "../document_edit/documentEdit";
+import ChatTest from "../chat_test/chatTest";
+import { appInitState, appReducer } from "./helpers/appReducer";
+import { docReducer, docsInitState } from "./helpers/docReducer";
+import { chatInitState, chatReducer } from "./helpers/chatReducer";
 
 function DashBoardWripper() {
   const sideBarResponsiveViewBreakpoint = "lg";
@@ -19,13 +21,9 @@ function DashBoardWripper() {
   const sideBarClose = () => setSideBarShow(false);
   const sideBarShow = () => setSideBarShow(true);
 
-  const [activeLayer, setActiveLayer] = useState(layerNames.documents);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [spentTokens, setSpentTokens] = useState(0);
-  const [docsViewState, setDocsViewState] =
-    useState<DocViewState>(docsViewInitState);
-  const [messages, setMessages] = useState<ReactNode[]>([]);
-  const [wsURL, setWsURL] = useState("");
+  const [appState, appDispatch] = useReducer(appReducer, appInitState);
+  const [docState, docDispatch] = useReducer(docReducer, docsInitState);
+  const [chatState, chatDispatch] = useReducer(chatReducer, chatInitState);
 
   const paramsToPass = {
     showSideBar,
@@ -35,28 +33,22 @@ function DashBoardWripper() {
     navBarHeight,
     sideBarWidth,
     iconRowWidth,
-    activeLayer,
-    setActiveLayer,
-    isAuthenticated,
-    setIsAuthenticated,
-    spentTokens,
-    setSpentTokens,
-    docsViewState,
-    setDocsViewState,
-    messages,
-    setMessages,
-    wsURL,
-    setWsURL,
+    appState,
+    docState,
+    chatState,
+    appDispatch,
+    docDispatch,
+    chatDispatch,
   };
 
   const renderLayers = () => {
-    switch (activeLayer) {
+    switch (appState.activeLayer) {
       case layerNames.documentEdit:
         return <DocumentEdit {...paramsToPass} />;
       case layerNames.documents:
         return <Documents {...paramsToPass} />;
       case layerNames.chat:
-        return <Tests {...paramsToPass} />;
+        return <ChatTest {...paramsToPass} />;
     }
   };
 

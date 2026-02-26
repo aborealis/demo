@@ -52,7 +52,6 @@ CriticalErrors = (
 )
 
 
-
 def _is_transient_error(exc: BaseException) -> bool:
     if isinstance(exc, (AuthenticationError, ResponseError)):
         return False
@@ -75,7 +74,6 @@ def log_and_raise_exception(error_msg: str,
     """
     logger.exception(error_msg, extra=context.model_dump())
     raise e
-
 
 
 def with_retry(is_async: bool = True):
@@ -195,10 +193,7 @@ def no_retry(is_async: bool = True):
             )
 
             try:
-                if is_async:
-                    return func(*args, **kwargs)
-                else:
-                    return func(*args, **kwargs)
+                return func(*args, **kwargs)
 
             except RedisError as e:
                 error_msg = f"Operation failed: {e}"

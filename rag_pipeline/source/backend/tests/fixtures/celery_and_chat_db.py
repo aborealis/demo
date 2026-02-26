@@ -3,7 +3,7 @@ import pytest
 from pytest import MonkeyPatch
 from sqlmodel import Session
 
-from project_setings import REDIS_URL_TEST
+from project_settings import REDIS_URL_TEST
 from fixtures.common import engine_tests
 
 

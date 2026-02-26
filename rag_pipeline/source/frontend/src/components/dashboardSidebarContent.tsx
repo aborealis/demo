@@ -1,19 +1,22 @@
+import type {
+  AppAction,
+  AppState,
+} from "./dashboard_wripper/helpers/appReducer";
 import { menuStructure } from "./helpers/constants";
 
 interface Params {
   iconRowWidth: number;
-  activeLayer: string;
-  setActiveLayer: (layerName: string) => void;
-  sideBarClose: () => void;
+  appState: AppState;
+  appDispatch: React.ActionDispatch<[action: AppAction]>;
 }
 
 const SideBarContent = (props: Params) => {
-  const { iconRowWidth, activeLayer, setActiveLayer, sideBarClose } = props;
+  const { iconRowWidth, appState, appDispatch } = props;
 
   const handleOnClick = (submenu: string, disabled = false) => {
     if (disabled) return;
-    setActiveLayer(submenu);
-    sideBarClose();
+    appDispatch({ type: "SET_LAYER", layer: submenu });
+    appDispatch({ type: "HIDE_SIDEBAR" });
   };
 
   return (
@@ -29,7 +32,7 @@ const SideBarContent = (props: Params) => {
             <div
               key={index}
               className={
-                Object.keys(menu.items).includes(activeLayer)
+                Object.keys(menu.items).includes(appState.activeLayer)
                   ? `fs-4 menu-icon active`
                   : `fs-4 menu-icon`
               }
@@ -46,12 +49,14 @@ const SideBarContent = (props: Params) => {
       <div className="p-3">
         {menuStructure.map((menu) => {
           return (
-            Object.keys(menu.items).includes(activeLayer) &&
+            Object.keys(menu.items).includes(appState.activeLayer) &&
             Object.keys(menu.items).map((submenu) => {
               if (!menu.items[submenu].visible) return null;
 
               const isDisabled = menu.items[submenu].disabled;
-              const isActive = menu.items[submenu].activeFor.includes(activeLayer);
+              const isActive = menu.items[submenu].activeFor.includes(
+                appState.activeLayer,
+              );
 
               return (
                 <p

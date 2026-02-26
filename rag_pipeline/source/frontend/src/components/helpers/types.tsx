@@ -19,24 +19,6 @@ export type RequestOptions = {
   token?: string | null;
 };
 
-export type DocViewState = {
-  currentPage: number;
-  docsPerPage: number;
-  searchType: string;
-  searchQuery: string | null;
-  documents: DocsServerType;
-  documentToEdit: OneDocType | null;
-};
-
-export const docsViewInitState: DocViewState = {
-  currentPage: 1,
-  docsPerPage: 10,
-  searchType: SearchType.keyword,
-  searchQuery: null,
-  documents: { total_count: 0, offset: 0, documents: [] },
-  documentToEdit: null,
-};
-
 export type OneDocType = {
   id: number;
   name: string;

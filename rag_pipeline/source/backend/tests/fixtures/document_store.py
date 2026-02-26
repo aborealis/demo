@@ -3,7 +3,7 @@ import pytest
 from pytest import MonkeyPatch
 from haystack_integrations.document_stores.pgvector import PgvectorDocumentStore
 from haystack.utils.auth import Secret
-from project_setings import USE_OLLAMA
+from project_settings import USE_OLLAMA
 
 from fixtures.common import DocStoreParams
 

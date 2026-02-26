@@ -1,39 +1,38 @@
 import { Offcanvas } from "react-bootstrap";
 import { LeafFill } from "react-bootstrap-icons";
 import SideBarContent from "./dashboardSidebarContent";
+import type {
+  AppAction,
+  AppState,
+} from "./dashboard_wripper/helpers/appReducer";
 
 interface Props {
-  showSideBar: boolean;
-  sideBarClose: () => void;
+  appState: AppState;
+  appDispatch: React.ActionDispatch<[action: AppAction]>;
   sideBarResponsiveViewBreakpoint: string;
   sideBarWidth: number;
   iconRowWidth: number;
-  activeLayer: string;
-  setActiveLayer: (layerName: string) => void;
 }
 
 const DashboardSideBarMobile = (props: Props) => {
   const {
-    showSideBar,
-    sideBarClose,
+    appState,
+    appDispatch,
     sideBarResponsiveViewBreakpoint,
     sideBarWidth: sideBarWidthPixels,
     iconRowWidth,
-    activeLayer,
-    setActiveLayer,
   } = props;
 
   const paramsSideBarContent = {
     iconRowWidth,
-    activeLayer,
-    setActiveLayer,
-    sideBarClose,
+    appState,
+    appDispatch,
   };
 
   return (
     <Offcanvas
-      show={showSideBar}
-      onHide={sideBarClose}
+      show={appState.showSideBar}
+      onHide={() => appDispatch({ type: "HIDE_SIDEBAR" })}
       className={`text-bg-dark d-${sideBarResponsiveViewBreakpoint}-none`}
       style={{ width: sideBarWidthPixels }}
     >

@@ -1,30 +1,26 @@
 import { LeafFill } from "react-bootstrap-icons";
 import SideBarContent from "./dashboardSidebarContent";
+import type {
+  AppAction,
+  AppState,
+} from "./dashboard_wripper/helpers/appReducer";
 
 interface Props {
   sideBarWidth: number;
   navBarHeight: number;
   iconRowWidth: number;
-  activeLayer: string;
-  setActiveLayer: (layerName: string) => void;
-  sideBarClose: () => void;
+  appState: AppState;
+  appDispatch: React.ActionDispatch<[action: AppAction]>;
 }
 
 const DashboartSidebarDesktop = (props: Props) => {
-  const {
-    sideBarWidth,
-    navBarHeight,
-    iconRowWidth,
-    activeLayer,
-    setActiveLayer,
-    sideBarClose,
-  } = props;
+  const { sideBarWidth, navBarHeight, iconRowWidth, appState, appDispatch } =
+    props;
 
   const paramsSideBarContent = {
     iconRowWidth,
-    activeLayer,
-    setActiveLayer,
-    sideBarClose,
+    appState,
+    appDispatch,
   };
 
   return (

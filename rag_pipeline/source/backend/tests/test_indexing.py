@@ -12,7 +12,7 @@ from services.haystack.docs_indexing import (
     filter_documents_with_retry,
 )
 from redis import Redis as RedisSync
-import project_setings as proj_settings
+import project_settings as proj_settings
 
 
 class TestSingleFile:

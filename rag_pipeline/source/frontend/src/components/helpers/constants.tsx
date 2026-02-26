@@ -13,10 +13,10 @@ export const layerNames = {
   dummyMenu5: "Dummy Menu 5",
 };
 
-const baseURL = isDebug ? "http://10.0.0.1:8000" : "https://light-agents.ai";
+const baseURL = isDebug ? "http://localhost:8000" : "https://myfrontend.com";
 export const baseWebSocketURL = isDebug
-  ? "ws://10.0.0.1:8000"
-  : "ws://light-agents.ai";
+  ? "ws://localhost:8000"
+  : "ws://myfrontend.com";
 const apiPrefix = "/api/v1";
 
 export const menuStructure = [
@@ -28,7 +28,11 @@ export const menuStructure = [
         disabled: false,
         activeFor: [layerNames.documents, layerNames.documentEdit],
       },
-      [layerNames.documentEdit]: { visible: false, disabled: true, activeFor: [] },
+      [layerNames.documentEdit]: {
+        visible: false,
+        disabled: true,
+        activeFor: [],
+      },
       [layerNames.chat]: {
         visible: true,
         disabled: false,
@@ -83,8 +87,10 @@ export const APIs = {
   fetchDocs: `${baseURL}${apiPrefix}/documents/`,
   searchDocsContext: `${baseURL}${apiPrefix}/documents/search/context/`,
   searchDocsKeyword: `${baseURL}${apiPrefix}/documents/search/keyword/`,
-  patchDocContent: (ID: number) => `${baseURL}${apiPrefix}/documents/update/content/${ID}/`,
+  patchDocContent: (ID: number) =>
+    `${baseURL}${apiPrefix}/documents/update/content/${ID}/`,
   progress: (ID: number) => `${baseURL}${apiPrefix}/documents/status/${ID}/`,
-  deleteDocument: (ID: number) => `${baseURL}${apiPrefix}/documents/delete/${ID}/`,
+  deleteDocument: (ID: number) =>
+    `${baseURL}${apiPrefix}/documents/delete/${ID}/`,
   requestChatPassport: `${baseURL}${apiPrefix}/chat/init/`,
 };

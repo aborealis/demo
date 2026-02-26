@@ -1,31 +1,33 @@
 import Pagination from "react-bootstrap/Pagination";
-import type { DocViewState } from "./types";
+import type {
+  DocAction,
+  DocState,
+} from "../dashboard_wripper/helpers/docReducer";
 
 interface Props {
-  nPages: number;
-  docsViewState: DocViewState;
-  setDocsViewState: React.Dispatch<React.SetStateAction<DocViewState>>;
+  docState: DocState;
+  docDispatch: React.ActionDispatch<[action: DocAction]>;
   setIsLoading: (flag: boolean) => void;
 }
 
 const MyPagination = (props: Props) => {
-  const { nPages, docsViewState, setDocsViewState, setIsLoading } = props;
+  const { docState, docDispatch, setIsLoading } = props;
+  const nPages = Math.ceil(
+    docState.documents.total_count / docState.docsPerPage,
+  );
   const pageNumbers = [...Array(nPages + 1).keys()].slice(1);
 
-  const setCurrentPage = (page: number) => {
-    setDocsViewState((prev) => ({ ...prev, currentPage: page }));
-  };
   const nextPage = () => {
-    if (docsViewState.currentPage !== nPages)
-      setCurrentPage(docsViewState.currentPage + 1);
+    if (docState.currentPage !== nPages)
+      docDispatch({ type: "SET_CURRENT_PAGE", page: docState.currentPage + 1 });
   };
   const prevPage = () => {
-    if (docsViewState.currentPage !== 1)
-      setCurrentPage(docsViewState.currentPage - 1);
+    if (docState.currentPage !== 1)
+      docDispatch({ type: "SET_CURRENT_PAGE", page: docState.currentPage - 1 });
   };
 
   const handleClick = (page: number) => {
-    setCurrentPage(page);
+    docDispatch({ type: "SET_CURRENT_PAGE", page });
     setIsLoading(true);
   };
 
@@ -37,7 +39,7 @@ const MyPagination = (props: Props) => {
           <Pagination.Item
             key={n}
             onClick={() => handleClick(n)}
-            active={n === docsViewState.currentPage}
+            active={n === docState.currentPage}
           >
             {n}
           </Pagination.Item>
@@ -48,24 +50,24 @@ const MyPagination = (props: Props) => {
 
         // restored comment from original Russian source
         if (n === 2) {
-          if (nPages > 7 && docsViewState.currentPage >= 5)
+          if (nPages > 7 && docState.currentPage >= 5)
             return <Pagination.Ellipsis key={n} />;
           return button;
         }
 
         // restored comment from original Russian source
         if (n === nPages - 1) {
-          if (nPages > 7 && docsViewState.currentPage <= nPages - 4)
+          if (nPages > 7 && docState.currentPage <= nPages - 4)
             return <Pagination.Ellipsis key={n} />;
           return button;
         }
 
         // restored comment from original Russian source
         if (nPages > 7) {
-          if (docsViewState.currentPage <= 3 && n <= 5) return button;
-          if (docsViewState.currentPage >= nPages - 2 && n >= nPages - 4)
+          if (docState.currentPage <= 3 && n <= 5) return button;
+          if (docState.currentPage >= nPages - 2 && n >= nPages - 4)
             return button;
-          if (Math.abs(docsViewState.currentPage - n) < 2) return button;
+          if (Math.abs(docState.currentPage - n) < 2) return button;
         } else return button;
 
         return null;
